@@ -1,0 +1,28 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'select'> {
+    label: string;
+}
+
+const { label, class: className, ...restProps } = Astro.props;
+---
+
+<select class:list={[className, 'purrfect-select']} aria-label={label} {...restProps}>
+    <slot />
+</select>
+
+<style>
+    .purrfect-select {
+        height: var(--size-input);
+        padding-inline: var(--space-xl);
+        border: var(--border-width) solid var(--color-border-default);
+        border-radius: var(--radius-lg);
+        background: var(--color-bg-muted);
+        color: var(--color-text-primary);
+        font-family: var(--font-input);
+        appearance: none;
+        field-sizing: content;
+        cursor: pointer;
+    }
+</style>

@@ -1,0 +1,9 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { useTranslations } from '../i18n';
+const t = useTranslations(Astro.currentLocale);
+---
+
+<Layout title={t.meta.contact.title} description={t.meta.contact.description}>
+    <main></main>
+</Layout>

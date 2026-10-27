@@ -1,0 +1,92 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import Tag from '../ui/Tag.astro';
+import ArrowIcon from '../../assets/icons/arrow-right.svg';
+
+interface Props extends HTMLAttributes<'article'> {
+    title: string;
+    tags: string[];
+    image: ImageMetadata;
+    imageAlt?: string;
+    href: string;
+}
+
+const { title, tags, image, imageAlt = '', href, class: className, ...restProps } = Astro.props;
+---
+
+<article class:list={[className, 'purrfect-breed-card']} {...restProps}>
+    <Image class="image" src={image} alt={imageAlt} width={300} />
+    <div class="body">
+        <div class="text">
+            <h3 class="title">{title}</h3>
+            <ul class="tags" role="list">
+                {tags.map((tag) => (
+                    <li>
+                        <Tag title={tag}>{tag}</Tag>
+                    </li>
+                ))}
+            </ul>
+        </div>
+        <a class="link" href={href} aria-label={title}>
+            <ArrowIcon aria-hidden="true" />
+        </a>
+    </div>
+</article>
+
+<style>
+    .purrfect-breed-card {
+        overflow: hidden;
+        border-radius: var(--radius-lg);
+        background: var(--color-bg-surface);
+    }
+
+    .image {
+        width: 100%;
+        height: var(--size-breed-card-image);
+        object-fit: cover;
+    }
+
+    .body {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: var(--space-lg) var(--space-md);
+    }
+
+    .text {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-sm);
+        min-width: 0;
+    }
+
+    .title {
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-semibold);
+        line-height: var(--line-height-fixed-md);
+    }
+
+    .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-xs);
+    }
+
+    .tags > li {
+        display: flex;
+        min-width: 0;
+    }
+
+    .link {
+        display: grid;
+        flex-shrink: 0;
+        place-items: center;
+        width: var(--size-icon-badge);
+        height: var(--size-icon-badge);
+        border-radius: var(--radius-round);
+        background: var(--palette-white);
+        color: var(--color-accent);
+    }
+</style>

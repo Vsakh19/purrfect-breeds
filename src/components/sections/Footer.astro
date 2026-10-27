@@ -1,0 +1,215 @@
+---
+import Container from '../ui/Container.astro';
+import Logo from '../../assets/logo-footer.svg';
+import Blob from '../../assets/decor/blob-footer.svg';
+import Facebook from '../../assets/icons/social-facebook.svg';
+import Instagram from '../../assets/icons/social-instagram.svg';
+import X from '../../assets/icons/social-x.svg';
+import Youtube from '../../assets/icons/social-youtube.svg';
+import Paws from '../../assets/decor/paw-prints.svg';
+import { useTranslations } from '../../i18n';
+import { routes, socialLinks } from '../../routes';
+
+const t = useTranslations(Astro.currentLocale);
+
+const socials = [
+    { label: t.footer.social.facebook, href: socialLinks.facebook, Icon: Facebook },
+    { label: t.footer.social.instagram, href: socialLinks.instagram, Icon: Instagram },
+    { label: t.footer.social.x, href: socialLinks.x, Icon: X },
+    { label: t.footer.social.youtube, href: socialLinks.youtube, Icon: Youtube },
+];
+
+const { company, usefulLinks, customerService } = t.footer.columns;
+
+const columns = [
+    {
+        title: company.title,
+        links: [
+            { label: company.about, href: routes.about },
+            { label: company.blog, href: routes.blog },
+            { label: company.careers, href: routes.careers },
+        ],
+    },
+    {
+        title: usefulLinks.title,
+        links: [
+            { label: usefulLinks.mostPopular, href: routes.mostPopular },
+            { label: usefulLinks.faq, href: routes.faq },
+        ],
+    },
+    {
+        title: customerService.title,
+        links: [{ label: customerService.contact, href: routes.contact }],
+    },
+];
+---
+
+<footer class="footer">
+    <Blob class="blob" aria-hidden="true" />
+    <img
+        class="paws"
+        src={Paws.src}
+        width={Paws.width}
+        height={Paws.height}
+        alt=""
+        loading="lazy"
+        decoding="async"
+    />
+    <Container class="container">
+        <div class="content">
+            <div class="brand">
+                <a href={routes.home} aria-label={t.footer.logoLabel}>
+                    <Logo />
+                </a>
+                <p class="about">{t.footer.about}</p>
+                <ul class="socials" role="list" aria-label={t.footer.socialLabel}>
+                    {socials.map(({ label, href, Icon }) => (
+                        <li>
+                            <a href={href} aria-label={label}>
+                                <Icon aria-hidden="true" />
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+
+            <div class="columns">
+                {columns.map((column, index) => (
+                    <div class="column">
+                        <p class="column-title" id={`footer-column-${index}`}>
+                            {column.title}
+                        </p>
+                        <ul class="links" role="list" aria-labelledby={`footer-column-${index}`}>
+                            {column.links.map((link) => (
+                                <li>
+                                    <a href={link.href}>{link.label}</a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
+            </div>
+        </div>
+        <p class="copyright">{t.footer.copyright}</p>
+    </Container>
+</footer>
+
+<style>
+    .footer {
+        position: relative;
+        padding-block: var(--space-5xl);
+        background: var(--gradient-brand-footer);
+        overflow: hidden;
+    }
+
+    .footer :focus-visible {
+        outline-color: var(--color-text-inverse);
+    }
+
+    .blob {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+    }
+
+    .container {
+        position: relative;
+        row-gap: var(--space-3xl);
+    }
+
+    .content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: var(--space-5xl) var(--space-4xl);
+    }
+
+    .brand {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-xl);
+    }
+
+    .about {
+        max-width: var(--size-footer-about);
+        line-height: var(--line-height-md);
+    }
+
+    .socials {
+        display: flex;
+        gap: var(--space-lg);
+    }
+
+    .socials a {
+        display: block;
+    }
+
+    .columns {
+        display: grid;
+        grid-template-columns: repeat(3, auto);
+        column-gap: var(--space-4xl);
+        align-items: start;
+    }
+
+    .column {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .column-title {
+        font-weight: var(--font-weight-semibold);
+    }
+
+    .links {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-md);
+        line-height: var(--line-height-md-plus);
+    }
+
+    .copyright {
+        color: var(--color-text-subtle);
+        font-size: var(--font-size-sm);
+        line-height: var(--line-height-fixed-lg);
+        text-align: center;
+        text-box: trim-both cap alphabetic;
+    }
+
+    .paws {
+        position: absolute;
+        top: 9px;
+        left: 14px;
+        width: 46.15%;
+    }
+
+    @media (max-width: 992px) {
+        .blob {
+            display: none;
+        }
+
+        .content {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand,
+        .column,
+        .links {
+            align-items: center;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .footer {
+            padding-block: var(--section-pt-mobile) var(--section-pb);
+        }
+
+        .content {
+            row-gap: var(--space-2xl);
+        }
+    }
+</style>

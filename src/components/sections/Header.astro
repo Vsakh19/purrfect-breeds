@@ -1,0 +1,182 @@
+---
+import NavLink from '../ui/NavLink.astro';
+import Input from '../ui/Input.astro';
+import Logo from '../../assets/logo.svg';
+import SearchIcon from '../../assets/icons/search.svg';
+import MenuIcon from '../../assets/icons/menu.svg';
+import HeartIcon from '../../assets/icons/heart.svg';
+import { useTranslations } from '../../i18n';
+import { routes } from '../../routes';
+
+const t = useTranslations(Astro.currentLocale);
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+const navItems = [
+    { label: t.header.nav.home, href: routes.home },
+    { label: t.header.nav.about, href: routes.about },
+    { label: t.header.nav.contact, href: routes.contact },
+];
+---
+
+<header class="header">
+    <a href={routes.home} aria-label={t.header.logoLabel}>
+        <Logo class="header-logo" />
+    </a>
+
+    <nav aria-label={t.header.navLabel}>
+        <ul class="nav-list" role="list">
+            {navItems.map((item) => (
+                <li>
+                    <NavLink
+                        href={item.href}
+                        state={item.href === currentPath ? 'active' : 'inactive'}
+                    >
+                        {item.label}
+                    </NavLink>
+                </li>
+            ))}
+        </ul>
+    </nav>
+
+    <div class="tools">
+        <form
+            id="productsSearchForm"
+            role="search"
+            aria-label={t.header.searchLabel}
+            action={routes.products}
+            method="get"
+        >
+            <Input
+                name="productsSearch"
+                form="productsSearchForm"
+                class="search"
+                variant="filled"
+                inputSize="sm"
+                label={t.header.searchLabel}
+                placeholder={t.header.searchPlaceholder}
+                submitIcon={SearchIcon}
+                submitLabel={t.header.searchSubmitLabel}
+            />
+        </form>
+        <button
+            class="favourites"
+            type="button"
+            aria-label={t.header.favouritesLabel}
+            data-favourites
+            data-label={t.header.favouritesLabel}
+        >
+            <HeartIcon aria-hidden="true" />
+            <span class="counter" aria-hidden="true" data-favourites-count></span>
+        </button>
+    </div>
+
+    <button class="menu-button" type="button" aria-label={t.header.menuLabel} aria-expanded="false">
+        <MenuIcon aria-hidden="true" />
+    </button>
+</header>
+
+<script>
+    const favouritesCount = 0;
+
+    const favouritesButton = document.querySelector<HTMLButtonElement>('[data-favourites]');
+    const favouritesCounter = favouritesButton?.querySelector('[data-favourites-count]');
+
+    if (favouritesButton && favouritesCounter) {
+        favouritesCounter.textContent = String(favouritesCount);
+        favouritesButton.ariaLabel = `${favouritesButton.dataset.label}: ${favouritesCount}`;
+    }
+</script>
+
+<style>
+    .header {
+        background: var(--color-bg-elevated);
+        position: fixed;
+        top: var(--hero-padding);
+        inset-inline: max(var(--gutter-mobile), (100% - var(--container-wide-max)) / 2);
+        z-index: 1;
+        padding: var(--space-md) var(--space-2xl);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-header);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .header-logo {
+        height: var(--size-logo-height);
+    }
+
+    .nav-list {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xl);
+    }
+
+    .tools {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xl);
+    }
+
+    .search {
+        width: var(--size-header-search-width);
+    }
+
+    .favourites,
+    .menu-button {
+        padding: 0;
+        border: 0;
+        background: none;
+        cursor: pointer;
+    }
+
+    .favourites {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: var(--size-icon-lg);
+        height: var(--size-icon-lg);
+        color: inherit;
+    }
+
+    .counter {
+        position: absolute;
+        top: calc(var(--size-counter-badge) / -2);
+        right: calc(var(--size-counter-badge) / -2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: var(--size-counter-badge);
+        height: var(--size-counter-badge);
+        border-radius: var(--radius-round);
+        background: var(--color-accent);
+        box-shadow: 0 0 0 var(--border-width) var(--palette-white);
+        color: var(--color-text-inverse);
+        font-family: var(--font-body);
+        font-size: var(--font-size-2xs);
+    }
+
+    .counter:empty {
+        display: none;
+    }
+
+    .menu-button {
+        display: none;
+        place-items: center;
+        width: var(--size-icon-button);
+        height: var(--size-icon-button);
+        color: var(--color-accent);
+    }
+
+    @media (max-width: 992px) {
+        nav,
+        .tools {
+            display: none;
+        }
+
+        .menu-button {
+            display: grid;
+        }
+    }
+</style>

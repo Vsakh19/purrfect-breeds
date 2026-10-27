@@ -1,0 +1,29 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'span'>;
+
+const { class: className, ...restProps } = Astro.props;
+---
+
+<span class:list={[className, 'purrfect-tag']} {...restProps}>
+    <slot />
+</span>
+
+<style>
+    .purrfect-tag {
+        display: inline-block;
+        max-width: 100%;
+        overflow: hidden;
+        padding: var(--space-2xs) var(--space-sm);
+        border: var(--border-width) solid var(--color-border-default);
+        border-radius: var(--radius-pill);
+        background-color: var(--color-bg-chip);
+        color: var(--color-text-muted);
+        font-family: var(--font-body);
+        font-size: var(--font-size-sm);
+        line-height: var(--line-height-lg);
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+</style>

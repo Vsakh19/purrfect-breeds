@@ -1,0 +1,150 @@
+:root {
+    /* Screens */
+    --screen-xs: 360px;
+    --screen-sm: 640px;
+    --screen-md: 768px;
+    --screen-lg: 992px;
+    --screen-xl: 1024px;
+    --screen-2xl: 1280px;
+    --screen-3xl: 1440px;
+    --screen-4xl: 1536px;
+
+    /* Colors */
+    --palette-orange-500: #fd7e14;
+    --palette-orange-gradient-start: #f87537;
+    --palette-orange-gradient-end: #fba81f;
+    --palette-white: #ffffff;
+    --palette-black: #000000;
+    --palette-ink: #090706;
+    --palette-gray-100: #f8f9fa;
+    --palette-slate-50: #f8fafc;
+    --palette-slate-200: #e2e8f0;
+    --palette-gray-200: #efefef;
+    --palette-slate-500: #64748b;
+    --palette-gray-500: #767676;
+
+    /* Backgrounds */
+    --color-bg-page: var(--palette-white);
+    --color-bg-surface: var(--palette-gray-100);
+    --color-bg-elevated: var(--palette-white);
+    --color-bg-muted: var(--palette-gray-200);
+    --color-bg-chip: var(--palette-slate-50);
+    --color-bg-inverse: var(--palette-black);
+
+    /* Text */
+    --color-text-primary: var(--palette-black);
+    --color-text-secondary: rgb(0 0 0 / 0.8);
+    --color-text-tertiary: rgb(0 0 0 / 0.6);
+    --color-text-subtle: rgb(0 0 0 / 0.5);
+    --color-text-muted: var(--palette-slate-500);
+    --color-text-placeholder: var(--palette-gray-500);
+    --color-text-inverse: var(--palette-white);
+    --color-text-accent: var(--palette-orange-500);
+
+    /* Borders */
+    --color-border-default: var(--palette-slate-200);
+
+    /* Actions / accents */
+    --color-accent: var(--palette-orange-500);
+    --color-action-primary: var(--palette-ink);
+
+    /* Gradients */
+    --gradient-brand-button: linear-gradient(
+        18.43deg,
+        var(--palette-orange-gradient-start) 0%,
+        var(--palette-orange-gradient-end) 100%
+    );
+    --gradient-brand-footer: linear-gradient(
+        13.74deg,
+        var(--palette-orange-gradient-start) 0%,
+        var(--palette-orange-gradient-end) 100%
+    );
+
+    /* Spacing */
+    --space-2xs: 4px;
+    --space-2xs-plus: 5px;
+    --space-xs: 8px;
+    --space-xs-plus: 10px;
+    --space-sm: 12px;
+    --space-md: 16px;
+    --space-lg: 20px;
+    --space-xl: 24px;
+    --space-2xl: 36px;
+    --space-3xl: 40px;
+    --space-4xl: 48px;
+    --space-5xl: 60px;
+    --space-6xl: 120px;
+
+    /* Layout */
+    --container-wide-max: 1320px;
+    --container-max: 1200px;
+    --content-max: 600px;
+    --hero-title-max: 647px;
+    --hero-min-height: 767px;
+
+    /* Section spacing */
+    --gutter-mobile: var(--space-xl);
+    --gutter-desktop: var(--space-5xl);
+    --section-pt-mobile: var(--space-2xl);
+    --section-pt-desktop: var(--space-5xl);
+    --section-pb: var(--space-5xl);
+    --section-pb-reviews-desktop: var(--space-6xl);
+    --section-gap-mobile: var(--space-2xl);
+    --section-gap-desktop: var(--space-5xl);
+    --hero-padding: var(--space-xl);
+
+    /* Radius */
+    --radius-md: 20px;
+    --radius-lg: 24px;
+    --radius-xl: 48px;
+    --radius-round: 50px;
+    --radius-pill: 999px;
+
+    /* Border */
+    --border-width: 1px;
+    --border-width-thick: 2px;
+
+    /* Shadows */
+    --shadow-header: 0 16px 6px rgb(0 0 0 / 0.03);
+    --shadow-card-brand: 12px 12px 6px rgb(248 117 55 / 0.12);
+
+    /* Sizes */
+    --size-control: 60px;
+    --size-input: 45px;
+    --size-header-search: 40px;
+    --size-header-search-width: 280px;
+    --size-explorer-search-width: 235px;
+    --size-icon-button: 40px;
+    --size-search-button: 28px;
+    --size-icon-badge: 24px;
+    --size-counter-badge: 12px;
+    --size-icon-lg: 24px;
+    --size-logo-height: 48px;
+    --size-review-card: 320px;
+    --size-breed-card-image: 216px;
+    --size-footer-about: 349px;
+
+    /* Typography */
+    --font-display: 'Poppins', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-input: Arial, sans-serif;
+
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    --font-size-2xs: 10px;
+    --font-size-sm: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 20px;
+    --font-size-xl: 40px;
+    --font-size-2xl: 54px;
+
+    --line-height-sm: 1.1;
+    --line-height-md: 1.32;
+    --line-height-md-plus: 1.5;
+    --line-height-lg: 1.6;
+
+    --line-height-fixed-md: 20px;
+    --line-height-fixed-lg: 26px;
+}

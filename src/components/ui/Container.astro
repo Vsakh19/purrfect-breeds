@@ -1,0 +1,35 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'div'>;
+
+const { class: className, ...restProps } = Astro.props;
+---
+
+<div class:list={[className, 'purrfect-container']} {...restProps}>
+    <slot />
+</div>
+
+<style>
+    .purrfect-container {
+        --gutter: var(--gutter-desktop);
+        --content-size: min(100% - 2 * var(--gutter), var(--container-max));
+
+        display: grid;
+        grid-template-columns:
+            [full-start] minmax(var(--gutter), 1fr)
+            [content-start] var(--content-size)
+            [content-end] minmax(var(--gutter), 1fr)
+            [full-end];
+    }
+
+    @media (max-width: 768px) {
+        .purrfect-container {
+            --gutter: var(--gutter-mobile);
+        }
+    }
+
+    :global(:where(.purrfect-container > *)) {
+        grid-column: content;
+    }
+</style>

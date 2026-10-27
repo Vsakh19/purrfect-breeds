@@ -1,0 +1,169 @@
+---
+import { useTranslations } from '../../i18n';
+import ReviewCard from '../blocks/ReviewCard.astro';
+import Container from '../ui/Container.astro';
+import ChevronIcon from '../../assets/icons/chevron-right.svg';
+
+const t = useTranslations(Astro.currentLocale);
+---
+
+<section class="reviews" aria-labelledby="reviews-title" data-reviews>
+    <Container class="container">
+        <h2 id="reviews-title" class="title">
+            {t.reviews.title}
+        </h2>
+        <div
+            class="reviews-view"
+            role="region"
+            aria-label={t.reviews.listLabel}
+            tabindex="0"
+            data-reviews-view
+        >
+            <ul id="reviews-list" class="reviews-track" role="list" data-reviews-track>
+                {t.reviews.items.map((item) => (
+                    <li>
+                        <ReviewCard quote={item.quote} author={item.author} />
+                    </li>
+                ))}
+            </ul>
+        </div>
+        <div class="controls">
+            <button
+                class="control prev"
+                type="button"
+                aria-label={t.reviews.prevLabel}
+                aria-controls="reviews-list"
+                data-reviews-prev
+            >
+                <ChevronIcon aria-hidden="true" />
+            </button>
+            <button
+                class="control"
+                type="button"
+                aria-label={t.reviews.nextLabel}
+                aria-controls="reviews-list"
+                data-reviews-next
+            >
+                <ChevronIcon aria-hidden="true" />
+            </button>
+        </div>
+    </Container>
+</section>
+
+<script>
+    const root = document.querySelector<HTMLElement>('[data-reviews]');
+    const view = root?.querySelector<HTMLElement>('[data-reviews-view]');
+    const track = root?.querySelector<HTMLElement>('[data-reviews-track]');
+    const prev = root?.querySelector<HTMLButtonElement>('[data-reviews-prev]');
+    const next = root?.querySelector<HTMLButtonElement>('[data-reviews-next]');
+
+    if (view && track && prev && next) {
+        const getStep = () =>
+            (track.firstElementChild as HTMLElement).offsetWidth +
+            parseFloat(getComputedStyle(track).columnGap);
+
+        const updateButtons = () => {
+            const atStart = view.scrollLeft <= 0;
+            const atEnd = view.scrollLeft + view.clientWidth >= view.scrollWidth - 1;
+
+            prev.setAttribute('aria-disabled', String(atStart));
+            next.setAttribute('aria-disabled', String(atEnd));
+        };
+
+        prev.addEventListener('click', () => view.scrollBy({ left: -getStep() }));
+        next.addEventListener('click', () => view.scrollBy({ left: getStep() }));
+        view.addEventListener('scroll', updateButtons, { passive: true });
+
+        updateButtons();
+    }
+</script>
+
+<style>
+    .reviews {
+        padding-block: var(--section-pt-desktop) var(--section-pb-reviews-desktop);
+    }
+
+    .reviews-view {
+        --view-inset: max(var(--gutter), (100% - var(--container-max)) / 2);
+
+        grid-column: full;
+        overflow-x: auto;
+        padding-inline: var(--view-inset);
+        padding-block-end: var(--space-lg);
+        margin-block-end: calc(-1 * var(--space-lg));
+        scroll-padding-inline: var(--view-inset);
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    .reviews-track {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xl);
+        width: max-content;
+    }
+
+    .controls {
+        grid-column: full;
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--space-3xl);
+        padding-inline: max(var(--gutter), (100% - var(--container-wide-max)) / 2);
+    }
+
+    .control {
+        display: grid;
+        place-items: center;
+        width: var(--size-icon-button);
+        height: var(--size-icon-button);
+        padding: 0;
+        border: 0;
+        border-radius: var(--radius-round);
+        background: var(--color-bg-inverse);
+        color: var(--color-text-inverse);
+        cursor: pointer;
+
+        @media (hover: hover) {
+            &:hover {
+                opacity: 0.85;
+            }
+        }
+
+        &[aria-disabled='true'] {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+    }
+
+    .prev svg {
+        scale: -1;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .reviews-view {
+            scroll-behavior: auto;
+        }
+    }
+
+    .container {
+        row-gap: var(--section-gap-desktop);
+    }
+
+    .title {
+        text-align: center;
+    }
+
+    @media (max-width: 768px) {
+        .reviews {
+            padding-block: var(--section-pt-mobile) var(--section-pb);
+        }
+
+        .container {
+            row-gap: var(--section-gap-mobile);
+        }
+    }
+</style>

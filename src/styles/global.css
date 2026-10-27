@@ -1,0 +1,42 @@
+@import 'reset.css';
+@import 'tokens.css';
+@import 'fonts.css';
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: var(--color-bg-page);
+    color: var(--color-text-primary);
+    font-family: var(--font-display);
+    font-size: var(--font-size-md);
+}
+
+h1 {
+    font-size: var(--font-size-2xl);
+    line-height: var(--line-height-sm);
+}
+
+h2 {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-sm);
+    margin-block: calc((var(--line-height-fixed-md) - var(--line-height-sm) * 1em) / 2);
+}
+
+@media (hover: hover) {
+    a:hover {
+        opacity: 0.85;
+    }
+}
+
+:focus-visible {
+    outline: var(--border-width-thick) solid var(--color-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+}

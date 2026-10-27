@@ -1,0 +1,41 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'figure'> {
+    quote: string;
+    author: string;
+}
+
+const { quote, author, class: className, ...restProps } = Astro.props;
+---
+
+<figure class:list={[className, 'purrfect-review-card']} {...restProps}>
+    <blockquote class="quote">“{quote}”</blockquote>
+    <figcaption class="author">— {author}</figcaption>
+</figure>
+
+<style>
+    .purrfect-review-card {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-sm);
+        width: var(--size-review-card);
+        max-width: 100%;
+        padding: var(--space-xl);
+        border-radius: var(--radius-md);
+        background-color: var(--color-bg-surface);
+        box-shadow: var(--shadow-card-brand);
+        color: var(--color-text-primary);
+    }
+
+    .quote {
+        font-style: italic;
+        font-size: var(--font-size-lg);
+        line-height: var(--line-height-sm);
+    }
+
+    .author {
+        font-weight: var(--font-weight-semibold);
+        line-height: var(--line-height-fixed-md);
+    }
+</style>

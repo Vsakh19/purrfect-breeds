@@ -1,0 +1,40 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'a'> {
+    state?: 'active' | 'inactive';
+}
+
+const { state = 'inactive', class: className, ...restProps } = Astro.props;
+---
+
+<a
+    class:list={[className, 'purrfect_nav_link', state]}
+    aria-current={state === 'active' ? 'page' : undefined}
+    {...restProps}
+>
+    <slot />
+</a>
+
+<style>
+    .purrfect_nav_link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-2xs) var(--space-xs-plus);
+        font-family: var(--font-display);
+        font-size: var(--font-size-lg);
+        white-space: nowrap;
+    }
+
+    .active {
+        border-bottom: var(--border-width-thick) solid var(--color-accent);
+        color: var(--color-text-accent);
+        font-weight: var(--font-weight-semibold);
+    }
+
+    .inactive {
+        color: var(--color-text-primary);
+        font-weight: var(--font-weight-medium);
+    }
+</style>

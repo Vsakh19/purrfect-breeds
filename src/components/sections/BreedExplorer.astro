@@ -1,0 +1,300 @@
+---
+import { getImage } from 'astro:assets';
+import Button from '../ui/Button.astro';
+import Container from '../ui/Container.astro';
+import Input from '../ui/Input.astro';
+import Select from '../ui/Select.astro';
+import { useTranslations } from '../../i18n';
+import { type Breed, fetchBreeds } from '../../api/get-breeds.ts';
+import { formatCoat, getBreedHref } from '../../utils/breed';
+import imagePlaceholderOne from '../../assets/images/breed-placeholder-1.png';
+import imagePlaceholderTwo from '../../assets/images/breed-placeholder-2.png';
+import imagePlaceholderThree from '../../assets/images/breed-placeholder-3.png';
+import imagePlaceholderFour from '../../assets/images/breed-placeholder-4.png';
+import BreedCard from '../blocks/BreedCard.astro';
+
+const t = useTranslations(Astro.currentLocale);
+const placeholderImages = [
+    imagePlaceholderOne,
+    imagePlaceholderTwo,
+    imagePlaceholderThree,
+    imagePlaceholderFour,
+];
+const placeholderUrls = await Promise.all(
+    placeholderImages.map(async (src) => (await getImage({ src, width: 300 })).src),
+);
+let breeds: Breed[] = [];
+
+try {
+    breeds = await fetchBreeds(4);
+} catch {
+    //
+}
+---
+
+<section
+    id="breed-explorer"
+    class="breed-explorer"
+    aria-labelledby="explorer-title"
+    data-breed-explorer
+    data-images={JSON.stringify(placeholderUrls)}
+    data-coat-suffix={t.explorer.coatSuffix}
+    data-error-text={t.explorer.loadError}
+>
+    <Container class="container">
+        <div class="header">
+            <h2 id="explorer-title" class="title">
+                {t.explorer.title}
+            </h2>
+            <search class="filters" aria-label={t.explorer.searchLabel} data-filters>
+                <Input
+                    class="search"
+                    name="search"
+                    label={t.explorer.searchLabel}
+                    placeholder={t.explorer.searchPlaceholder}
+                />
+                <Select name="coat" label={t.explorer.coatFilter} data-coat-options>
+                    <option value="">{t.explorer.coatFilter}</option>
+                </Select>
+            </search>
+        </div>
+        <ul class="list" role="list" data-list>
+            {breeds.map((breed, index) => (
+                <li>
+                    <BreedCard
+                        title={breed.breed}
+                        tags={[breed.country, formatCoat(breed.coat, t.explorer.coatSuffix)]}
+                        image={placeholderImages[index % placeholderImages.length]}
+                        href={getBreedHref(breed.breed)}
+                    />
+                </li>
+            ))}
+        </ul>
+        <p class="status" role="alert" hidden data-status></p>
+        <p class="empty" hidden data-empty>
+            {t.explorer.emptyResult}
+        </p>
+        <Button class="load-more" variant="brand" hidden data-load-more>
+            {t.explorer.loadMore}
+        </Button>
+        <template data-card-template>
+            <li>
+                <BreedCard title="" tags={['', '']} image={placeholderImages[0]} href="" />
+            </li>
+        </template>
+    </Container>
+</section>
+
+<script>
+    import { fetchBreeds, type Breed } from '../../api/get-breeds';
+    import { formatCoat, getBreedHref } from '../../utils/breed';
+
+    const fictionalUnlimitedFetchNumber = 1000000;
+    const searchDebounceMs = 1000;
+
+    const getCoats = (breeds: Breed[]) =>
+        [...new Set(breeds.map((b) => b.coat).filter(Boolean))].sort();
+
+    async function init() {
+        const root = document.querySelector<HTMLElement>('[data-breed-explorer]');
+        const cardList = root?.querySelector<HTMLUListElement>('[data-list]');
+        const template = root?.querySelector<HTMLTemplateElement>('[data-card-template]');
+        const cardTemplate = template?.content.firstElementChild;
+        const filters = root?.querySelector<HTMLElement>('[data-filters]');
+        const searchInput = filters?.querySelector<HTMLInputElement>('input[name="search"]');
+        const coatSelect = root?.querySelector<HTMLSelectElement>('[data-coat-options]');
+        const status = root?.querySelector<HTMLElement>('[data-status]');
+        const emptyResult = root?.querySelector<HTMLElement>('[data-empty]');
+        const loadMoreButton = root?.querySelector<HTMLButtonElement>('[data-load-more]');
+
+        if (
+            !root ||
+            !cardList ||
+            !cardTemplate ||
+            !searchInput ||
+            !coatSelect ||
+            !status ||
+            !emptyResult ||
+            !loadMoreButton
+        ) {
+            return;
+        }
+
+        const images: string[] = JSON.parse(root.dataset.images ?? '[]');
+        const coatSuffix = root.dataset.coatSuffix ?? '';
+        const errorText = root.dataset.errorText ?? '';
+
+        const getColumns = () =>
+            Number(getComputedStyle(cardList).getPropertyValue('--columns')) || 1;
+        let columns = getColumns();
+        let rows = 1;
+
+        const getVisibleCount = () => rows * columns;
+
+        const createCard = (breed: Breed, index: number) => {
+            const item = cardTemplate.cloneNode(true) as HTMLElement;
+            const title = item.querySelector('.title');
+            const [country, coat] = item.querySelectorAll<HTMLElement>('.purrfect-tag');
+            const image = item.querySelector('img');
+            const link = item.querySelector('a');
+
+            if (title) title.textContent = breed.breed;
+            if (link) {
+                link.href = getBreedHref(breed.breed);
+                link.ariaLabel = breed.breed;
+            }
+            if (country) country.textContent = country.title = breed.country || '-';
+            if (coat) {
+                coat.textContent = coat.title = breed.coat
+                    ? formatCoat(breed.coat, coatSuffix)
+                    : '-';
+            }
+            if (image) image.src = images[index % images.length];
+
+            return item;
+        };
+
+        const renderCards = (items: Breed[]) => {
+            const visibleCount = getVisibleCount();
+
+            cardList.replaceChildren(...items.slice(0, visibleCount).map(createCard));
+            loadMoreButton.hidden = visibleCount >= items.length;
+            emptyResult.hidden = items.length > 0;
+        };
+
+        const renderCoatOptions = (coats: string[]) => {
+            const placeholder = coatSelect.options[0];
+            coatSelect.replaceChildren(placeholder, ...coats.map((coat) => new Option(coat, coat)));
+        };
+
+        cardList.setAttribute('aria-busy', 'true');
+
+        try {
+            const breeds = await fetchBreeds(fictionalUnlimitedFetchNumber);
+            let filteredBreeds = breeds;
+            let searchTimeout: ReturnType<typeof setTimeout> | undefined;
+
+            const applyFilters = () => {
+                clearTimeout(searchTimeout);
+
+                const query = searchInput.value.trim().toLowerCase();
+                const coat = coatSelect.value;
+
+                filteredBreeds = breeds.filter(
+                    (breed) =>
+                        (!coat || breed.coat === coat) && breed.breed.toLowerCase().includes(query),
+                );
+                rows = 1;
+                renderCards(filteredBreeds);
+            };
+
+            renderCards(filteredBreeds);
+            renderCoatOptions(getCoats(breeds));
+
+            loadMoreButton.addEventListener('click', () => {
+                rows += 1;
+                renderCards(filteredBreeds);
+            });
+
+            coatSelect.addEventListener('change', applyFilters);
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(applyFilters, searchDebounceMs);
+            });
+
+            const resizeObserver = new ResizeObserver(() => {
+                const nextColumns = getColumns();
+
+                if (nextColumns === columns) return;
+
+                columns = nextColumns;
+                renderCards(filteredBreeds);
+            });
+
+            resizeObserver.observe(cardList);
+        } catch {
+            status.textContent = errorText;
+            status.hidden = false;
+        } finally {
+            cardList.setAttribute('aria-busy', 'false');
+        }
+    }
+
+    init();
+</script>
+
+<style>
+    .breed-explorer {
+        scroll-margin-top: calc(var(--hero-padding) + var(--size-logo-height));
+        padding-block: var(--section-pt-desktop) var(--section-pb);
+    }
+
+    .container {
+        row-gap: var(--section-gap-desktop);
+    }
+
+    .list {
+        --columns: 4;
+        display: grid;
+        grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+        gap: var(--space-xl);
+    }
+
+    .list > li {
+        display: grid;
+    }
+
+    @media (max-width: 1024px) {
+        .list {
+            --columns: 3;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .list {
+            --columns: 2;
+        }
+    }
+
+    @media (max-width: 639px) {
+        .list {
+            --columns: 1;
+        }
+    }
+
+    .header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        row-gap: var(--space-xl);
+    }
+
+    .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-md);
+    }
+
+    .search {
+        width: var(--size-explorer-search-width);
+    }
+
+    .load-more {
+        justify-self: center;
+    }
+
+    .load-more[hidden] {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .breed-explorer {
+            padding-block: var(--section-pt-mobile) var(--section-pb);
+        }
+
+        .container {
+            row-gap: var(--section-gap-mobile);
+        }
+    }
+</style>
